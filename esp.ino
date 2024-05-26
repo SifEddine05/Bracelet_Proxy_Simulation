@@ -9,7 +9,6 @@
 BLECharacteristic *pCharacteristic;
 bool deviceConnected = false;
 
-// Define your service and characteristic UUIDs
 #define SERVICE_UUID           "36b29c3e-5fd5-488e-b915-4d04e4d61e7f"
 #define CHARACTERISTIC_UUID_RX "2d3c4928-5e6f-4f93-9d83-08a278a4b729"
 #define CHARACTERISTIC_UUID_TX "2d3c4928-5e6f-4f93-9d83-08a278a4b729"
@@ -86,11 +85,10 @@ void setup() {
 
 void loop() {
   if (deviceConnected) {
-    // Generate random temperature between 38 and 41
-    float temperature = 38 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (41 - 38)));
+    // Generate random temperature between 36 and 42
+    float temperature = 36 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (42 - 36)));
     
-    // Generate random steps, with most values between 150 and 300
-    int steps = 150 + rand() % 151; // Random value between 150 and 300
+    int steps = 100 + rand() % 151; // Random value between 150 and 300
 
     // Convert the temperature and steps to a string
     String datastring = "Id: 1, Temp: " + String(temperature, 1) + " C, Steps: " + String(steps);
@@ -131,6 +129,5 @@ void loop() {
     Serial.printf("Notification Time: %lld us\n", endNotify - startNotify);
   }
   
-  // Wait for 5 seconds before sending the next random value
-  delay(1000*60*5);
+  delay(1000*15);
 }

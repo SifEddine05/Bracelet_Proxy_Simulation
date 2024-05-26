@@ -40,7 +40,7 @@ def decrypt_chacha20(data):
 # Send encrypted data to Django server
 def send_to_django_server(data):
     try : 
-        url = "https://easy-swine-wise.ngrok-free.app/api/encrypted-data/"  # Replace with your Django server URL
+        url = "https://easy-swine-wise.ngrok-free.app/api/receive-data/"  # Replace with your Django server URL
         headers = {'Content-Type': 'application/json'}
         payload = {"data": data}
         response = requests.post(url, json=payload, headers=headers)
