@@ -1,7 +1,6 @@
 import asyncio
 from bleak import BleakClient
-from Crypto.Cipher import ChaCha20, AES
-import base64
+from Crypto.Cipher import ChaCha20
 import requests
 
 # Replace this with your ESP32's MAC address
@@ -17,7 +16,6 @@ KEY = b'\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F\x10\x11
 # ChaCha20 nonce (12 bytes, must match the nonce used in ESP32 code)
 NONCE = b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
 
-AESKEY =b'\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F'
 
 
 # Callback function to handle notifications
@@ -27,10 +25,8 @@ def notification_handler(sender, data):
     # Decrypt the data using ChaCha20
     decrypted_data = decrypt_chacha20(data)
     print(f"Decrypted data: {decrypted_data}")
-    encrypted_data = encrypt_data(decrypted_data)  
-    print(f"encrypted_data : {encrypted_data}")
 
-    send_to_django_server(str(encrypted_data))
+    send_to_django_server(str(decrypted_data))
 
     # send_to_django_server(encrypted_data)
 
@@ -40,19 +36,13 @@ def decrypt_chacha20(data):
     decrypted_data = cipher.decrypt(data)
     return decrypted_data.decode('utf-8')
 
-# Encrypt the data using AES
-def encrypt_data(data):
-    cipher = AES.new(AESKEY, AES.MODE_GCM)
-    ciphertext, tag = cipher.encrypt_and_digest(data.encode('utf-8'))
-    return base64.b64encode(cipher.nonce + ciphertext).decode('utf-8')
-   
 
 # Send encrypted data to Django server
 def send_to_django_server(data):
     try : 
         url = "https://easy-swine-wise.ngrok-free.app/api/encrypted-data/"  # Replace with your Django server URL
         headers = {'Content-Type': 'application/json'}
-        payload = {"encrypted_data": data}
+        payload = {"data": data}
         response = requests.post(url, json=payload, headers=headers)
         print(f"Data sent to Django server, response status: {response.status_code}")
     except Exception as error :
